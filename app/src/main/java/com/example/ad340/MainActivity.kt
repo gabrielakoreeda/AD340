@@ -5,10 +5,16 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import androidx.appcompat.widget.Toolbar
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import com.example.ad340.forecast.CurrentForecastFragment
+import com.example.ad340.forecast.CurrentForecastFragmentDirections
 import com.example.ad340.location.LocationEntryFragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : AppCompatActivity(), AppNavigator {
+class MainActivity : AppCompatActivity() {
 
     private val forecastRepository = ForecastRepository()
     private lateinit var tempDisplaySettingManager: TempDisplaySettingManager
@@ -21,10 +27,11 @@ class MainActivity : AppCompatActivity(), AppNavigator {
 
         tempDisplaySettingManager = TempDisplaySettingManager(this)
 
-        supportFragmentManager
-            .beginTransaction()
-            .add(R.id.fragment_container, LocationEntryFragment())
-            .commit()
+        val navController = findNavController(R.id.nav_host_fragment)
+        val appBarConfiguration = AppBarConfiguration(navController.graph)
+
+        findViewById<Toolbar>(R.id.toolbar).setTitle(R.string.app_name)
+        findViewById<BottomNavigationView>(R.id.bottomNavigationView).setupWithNavController(navController)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -41,19 +48,5 @@ class MainActivity : AppCompatActivity(), AppNavigator {
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun navigateToCurrentForecast(zipcode: String) {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragment_container, CurrentForecastFragment.newInstance(zipcode))
-            .commit()
-    }
-
-    override fun navigateToLocationEntry() {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragment_container, LocationEntryFragment())
-            .commit()
     }
 }
